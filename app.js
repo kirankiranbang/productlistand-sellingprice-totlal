@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 app.use('/todos', todoRoutes);
 
 
-// app.use('/todos/logindata', express.static('public/signup.html'));
+/// app.use('/todos/logindata', express.static('public/signup.html'));
 // app.use('/todos', todoRoutes);
 
 
