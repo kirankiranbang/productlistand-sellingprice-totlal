@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Todo List</title>
+  <style>
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .card-actions {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Todo List</h1>
+
+  <form id="todo-form">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="description">Description:</label>
+    <input type="text" id="description" name="description" required>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <h2>Done Items:</h2>
+  <ul id="done-list"></ul>
+
+  <h2>Not Done Items:</h2>
+  <ul id="not-done-list"></ul>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+  <script>
+   // Display all stored todos on page load
+// Display all stored todos on page load
+document.addEventListener('DOMContentLoaded', async function() {
+    await getTodos();
+  });
+
+  document.getElementById('todo-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const name = document.getElementById('name').value;
+    const description = document.getElementById('description').value;
+
+    const todoItem = {
+      name: name,
+      description: description,
+    };
+
+    try {                            //posting on this url to database
+      await axios.post('http://localhost:3000/todos/login', todoItem);
+      clearTodoLists();
+      await getTodos();
+      document.getElementById('todo-form').reset(); // Clear the form
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  async function getTodos() {
+    try {                                  //getting data which posted to database through this url
+      const response = await axios.get('http://localhost:3000/todos/logindata');
+      const todos = response.data;
+      todos.forEach(function(todoItem) {
+        displayTodoItem(todoItem);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+
+  function clearTodoLists() {
+    const doneList = document.getElementById('done-list');
+    const notDoneList = document.getElementById('not-done-list');
+    doneList.innerHTML = '';
+    notDoneList.innerHTML = '';
+  }
+
+  function displayTodoItem(todo) {
+    const doneList = document.getElementById('done-list');
+    const notDoneList = document.getElementById('not-done-list');
+    const todoElement = document.createElement('li');
+
+    const doneButton = document.createElement('button');
+    doneButton.textContent = 'Done';
+
+    if (todo.name === todo.description) {
+      todoElement.textContent = ` name:${todo.name} desciption: ${todo.description}`;
+      doneList.appendChild(todoElement);
+      
+    } else {
+      todoElement.textContent = `name  ${todo.name}   desciption  : ${todo.description}`;
+      notDoneList.appendChild(todoElement);
+
+      todoElement.appendChild(doneButton);
+
+    }
+  }
+  </script>
+</body>
+</html>
