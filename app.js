@@ -12,18 +12,15 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Routes
-// app.use('/todos', express.static('public'));
+// app.use('/product', express.static('public'));
 
 
-//http://localhost:3000/todo/login
+//http://localhost:3000/product/login
 
 //hoisting through this path 
- app.use('/todos/login', express.static('public/signup.html'));
-app.use('/todos', todoRoutes);
+ app.use('/product/login', express.static('public/signup.html'));
+app.use('/product', todoRoutes);
 
-
-///x app.use('/todos/logindata', express.static('public/signup.html'));
-// app.use('/todos', todoRoutes);
 
 
 sequelize.sync()

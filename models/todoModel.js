@@ -1,24 +1,28 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../util/database');
 
-const User = sequelize.define('user', {
+
+
+
+
+const Todo  = sequelize.define('user', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
   },
-  name: {
+  productName: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  description: {
-    type: DataTypes.STRING,
+  sellingPrice: {
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
 }, {
-  tableName: 'todos', // Name of your MySQL table
+ tableName: 'productsProject', // Corrected table name// Name of your MySQL table
   timestamps: true, // If you want Sequelize to manage createdAt and updatedAt fields
 });
 
 console.log("Table name is 'todos' in models-user");
-module.exports = User;
+module.exports = Todo ;

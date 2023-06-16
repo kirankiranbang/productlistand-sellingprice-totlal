@@ -9,5 +9,5 @@ router.post('/login', todoController.createUser);
 // router.post('/login', todoController.createUser);
 // // Route for retrieving all todo items
 router.get('/logindata', todoController.getTodos);
-
+router.delete('/login/:id', todoController.deleteTodo);
 module.exports = router;

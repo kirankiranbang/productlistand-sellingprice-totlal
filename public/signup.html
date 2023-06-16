@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Todo List</title>
+  <title>Products List</title>
   <style>
     .card {
       border: 1px solid #ccc;
@@ -16,14 +16,22 @@
   </style>
 </head>
 <body>
-  <h1>Todo List</h1>
+  <h1>Products List</h1>
 
   <form id="todo-form">
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required>
+    <label for="product-name">Product Name:</label>
+    <input type="text" id="product-name" name="product-name" required><br>
+    <br>
 
-    <label for="description">Description:</label>
-    <input type="text" id="description" name="description" required>
+    <label for="selling-price">Selling Price:</label>
+    <select id="selling-price" name="selling-price">
+      <option value="1000">1000</option>
+      <option value="2000">2000</option>
+      <option value="5000">5000</option>
+      <option value="10000">10000</option>
+      <option value="20000">20000</option>
+    </select><br>
+    <br>
 
     <button type="submit">Submit</button>
   </form>
@@ -31,32 +39,32 @@
   <h2>Done Items:</h2>
   <ul id="done-list"></ul>
 
-  <h2>Not Done Items:</h2>
-  <ul id="not-done-list"></ul>
+  <h2>Total Selling Price:</h2>
+  <div id="total-selling-price"></div>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
   <script>
    // Display all stored todos on page load
-// Display all stored todos on page load
-document.addEventListener('DOMContentLoaded', async function() {
+  window.document.addEventListener('DOMContentLoaded', async function() {
     await getTodos();
   });
 
   document.getElementById('todo-form').addEventListener('submit', async function(event) {
     event.preventDefault();
 
-    const name = document.getElementById('name').value;
-    const description = document.getElementById('description').value;
+    const productName = document.getElementById('product-name').value;
+    const sellingPrice = parseInt(document.getElementById('selling-price').value);
 
     const todoItem = {
-      name: name,
-      description: description,
+      productName: productName,
+      sellingPrice: sellingPrice
     };
 
-    try {                            //posting on this url to database
-      await axios.post('http://localhost:3000/todos/login', todoItem);
-      clearTodoLists();
+    try {
+      await axios.post('http://localhost:3000/product/login', todoItem);
+      clearTodoList();
       await getTodos();
+      calculateTotalSellingPrice();
       document.getElementById('todo-form').reset(); // Clear the form
     } catch (error) {
       console.log(error);
@@ -64,45 +72,58 @@ document.addEventListener('DOMContentLoaded', async function() {
   });
 
   async function getTodos() {
-    try {                                  //getting data which posted to database through this url
-      const response = await axios.get('http://localhost:3000/todos/logindata');
+    try {
+      const response = await axios.get('http://localhost:3000/product/logindata');
       const todos = response.data;
       todos.forEach(function(todoItem) {
         displayTodoItem(todoItem);
       });
+      calculateTotalSellingPrice();
     } catch (error) {
       console.log(error);
     }
   }
 
-
-
-  function clearTodoLists() {
-    const doneList = document.getElementById('done-list');
-    const notDoneList = document.getElementById('not-done-list');
-    doneList.innerHTML = '';
-    notDoneList.innerHTML = '';
+  function clearTodoList() {
+    const todoList = document.getElementById('done-list');
+    todoList.innerHTML = '';
   }
 
   function displayTodoItem(todo) {
-    const doneList = document.getElementById('done-list');
-    const notDoneList = document.getElementById('not-done-list');
+    const todoList = document.getElementById('done-list');
     const todoElement = document.createElement('li');
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', async function() {
+      try {
+        await axios.delete(`http://localhost:3000/product/login/${todo.id}`);
+        clearTodoList();//if  not used this line if refresh data delete,click om delte multiple
+        await getTodos();
+        calculateTotalSellingPrice();
+      } catch (error) {
+        console.log(error);
+      }
+    });
 
-    const doneButton = document.createElement('button');
-    doneButton.textContent = 'Done';
+    todoElement.textContent = `Product: ${todo.productName}, Price: ${todo.sellingPrice}`;
+    todoList.appendChild(todoElement);
+    todoElement.appendChild(deleteButton);
+  }
 
-    if (todo.name === todo.description) {
-      todoElement.textContent = ` name:${todo.name} desciption: ${todo.description}`;
-      doneList.appendChild(todoElement);
-      
-    } else {
-      todoElement.textContent = `name  ${todo.name}   desciption  : ${todo.description}`;
-      notDoneList.appendChild(todoElement);
 
-      todoElement.appendChild(doneButton);
 
-    }
+
+  function calculateTotalSellingPrice() 
+  {
+    const todos = document.querySelectorAll('#done-list li');
+    let total = 0;
+    todos.forEach(function(todoElement) 
+    {
+      const price = parseInt(todoElement.textContent.match(/Price: (\d+)/)[1]);
+      total = total+price;
+    });
+    const totalSellingPriceElement = document.getElementById('total-selling-price');
+    totalSellingPriceElement.textContent = `Total Selling Price: ${total}`;
   }
   </script>
 </body>
